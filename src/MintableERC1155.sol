@@ -1,6 +1,6 @@
-import "@openzeppelin/contracts/token/ERC1155/presets/ERC1155PresetMinterPauser.sol";
+import "openzeppelin-contracts/contracts/token/ERC1155/presets/ERC1155PresetMinterPauser.sol";
 
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.19;
 
 contract MintableERC1155 is ERC1155PresetMinterPauser {
 
