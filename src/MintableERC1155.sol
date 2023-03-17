@@ -11,42 +11,24 @@ contract MintableERC1155 is ERC1155PresetMinterPauser {
      * deploys the contract.
      */
     constructor(string memory _uri) ERC1155PresetMinterPauser(_uri) {
+        // https://across100daynft.mypinata.cloud/ipfs/Qmbcu11wvEy9NR8AzcpyVCeSiuzoNSUvFo1h9GYhaErUio
         baseMetadataURI = _uri;
-    }
-
-    /**
-     * @dev Creates `amount` new tokens for `to`, of token type `id`.
-     *
-     * See {ERC1155-_mint}.
-     *
-     * Requirements:
-     *
-     * - the caller must have the `MINTER_ROLE`.
-     */
-    function mint(
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(hasRole(MINTER_ROLE, _msgSender()), "ERC1155PresetMinterPauser: must have minter role to mint");
-
-        _mint(to, id, amount, data);
     }
 
     /**
      * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] variant of {mint}.
      */
-    function mintBatch(
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function airdrop(
+        address[] to,
+        uint256 id
+    ) public override {
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC1155PresetMinterPauser: must have minter role to mint");
 
-        _mintBatch(to, ids, amounts, data);
-    }    /**
+        // TODO:
+        // - mint 1 token of `id` to each address in `to`
+    }    
+    
+    /**
      * @dev Sets a new URI for all token types, by relying on the token type ID
      * substitution mechanism
      * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
@@ -73,6 +55,7 @@ contract MintableERC1155 is ERC1155PresetMinterPauser {
     sets our URI and makes the ERC1155 OpenSea compatible
     */
     function uri(uint256 _tokenid) override public view returns (string memory) {
+        // TODO:
         return string(
             abi.encodePacked(
                 baseMetadataURI,
