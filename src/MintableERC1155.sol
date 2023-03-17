@@ -3,16 +3,16 @@ import "openzeppelin-contracts/contracts/token/ERC1155/presets/ERC1155PresetMint
 pragma solidity >=0.8.19;
 
 contract MintableERC1155 is ERC1155PresetMinterPauser {
-
-    string public baseMetadataURI; //the token metadata URI
+    
+    mapping(uint256 => string) public uris;
+    
+    event Airdrop(address caller, address[] recipients, uint256 id);
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE`, and `PAUSER_ROLE` to the account that
      * deploys the contract.
      */
-    constructor(string memory _uri) ERC1155PresetMinterPauser(_uri) {
-        // https://across100daynft.mypinata.cloud/ipfs/Qmbcu11wvEy9NR8AzcpyVCeSiuzoNSUvFo1h9GYhaErUio
-        baseMetadataURI = _uri;
+    constructor() ERC1155PresetMinterPauser("") {
     }
 
     /**
@@ -24,8 +24,18 @@ contract MintableERC1155 is ERC1155PresetMinterPauser {
     ) public override {
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC1155PresetMinterPauser: must have minter role to mint");
 
-        // TODO:
+        address operator = _msgSender();
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = id;
+
         // - mint 1 token of `id` to each address in `to`
+        for (uint256 i = 0; i < to.length; i++) {
+            _beforeTokenTransfer(operator, from, to[i], [id], [1], "");
+            ++_balances[id][to[i]];
+            _doSafeTransferAcceptanceCheck(operator, address(0), to[i], id, 1, "");
+            emit TransferSingle(operator, address(0), to[i], id, amount);
+            _afterTokenTransfer(operator, address(0), to[i], ids, [1], "");
+        }
     }    
     
     /**
@@ -47,21 +57,15 @@ contract MintableERC1155 is ERC1155PresetMinterPauser {
      * Because these URIs cannot be meaningfully represented by the {URI} event,
      * this function emits no events.
      */
-    function setURI(string memory newuri) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setURI(newuri);
+    function setURI(uint256 id, string memory newuri) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uris[id] = newuri;
     }
 
     /*
     sets our URI and makes the ERC1155 OpenSea compatible
     */
     function uri(uint256 _tokenid) override public view returns (string memory) {
-        // TODO:
-        return string(
-            abi.encodePacked(
-                baseMetadataURI,
-                Strings.toString(_tokenid),".json"
-            )
-        );
+        return uris[id];
     }
 
 
